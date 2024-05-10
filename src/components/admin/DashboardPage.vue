@@ -135,7 +135,7 @@
     </div>
 
     <div class="row" v-if="showUserDiv">
-      <!-- Area Chart -->
+      <td><i class="bi bi-plus" style="color:green;width: 40px;font-size:20px; text-align: right: inherit;" ></i></td>
       <div class="col-xl-12 col-lg-12">
         <div class="card shadow mb-4">
           <table class="table table-striped">
@@ -153,7 +153,7 @@
                 <td>{{main.fname}}</td>
                 <td>{{main.lname}}</td>
                 <td>{{main.email}}</td>
-                <td><i class="bi bi-pencil-square" style="color:orange" @click="openModal"></i></td>
+                <td><i class="bi bi-pencil-square" style="color:orange" @click="openUserModal(main)"></i></td>
                 <td><i class="bi bi-trash" style="color:red"></i></td>
               </tr>
             </tbody>
@@ -200,24 +200,37 @@
    <div class="modal" v-if="showModal">
     <div class="modal-content">
       <span class="close" @click="closeModal">&times;</span>
-      <h2>Save Data</h2>
+      <h2>{{userStatus }}</h2>
       <form @submit.prevent="saveData">
+        <div class="row">
         <label for="username">Username:</label>
-        <input type="text" id="username" v-model="formData.username" required>
+        <input type="text" id="username" v-model="userFormData.username" required>
+        </div>
 
+        <div class="row">
         <label for="password">Password:</label>
-        <input type="password" id="password" v-model="formData.password" required>
+        <input type="password" id="password" v-model="userFormData.password" :disabled="disableFields" required>
+        </div>
 
+        <div class="row">
         <label for="email">Email:</label>
-        <input type="email" id="email" v-model="formData.email" required>
+        <input type="email" id="email" v-model="userFormData.email" :disabled="disableFields" required>
+        </div>
 
+          <div class="row">
         <label for="firstName">First Name:</label>
-        <input type="text" id="firstName" v-model="formData.firstName" required>
+        <input type="text" id="firstName" v-model="userFormData.firstName" required>
+        </div>
 
+        <div class="row">
         <label for="lastName">Last Name:</label>
-        <input type="text" id="lastName" v-model="formData.lastName" required>
+        <input type="text" id="lastName" v-model="userFormData.lastName" required>
+        </div>
+        <br>
 
-        <button type="submit">Save</button>
+        <div class="row">
+        <button style="color: white;background-color: aqua;" type="submit">Save</button>
+        </div>
       </form>
     </div>
   </div>
@@ -236,13 +249,15 @@ export default {
       categoryList: [],
       blogList: [],
       userList: [],
-      showModal: true,
-      formData: {
+      showModal: false,
+      userStatus : 'Add New User',
+      isDisabled : false,
+      userFormData: {
         username: '',
         password: '',
         email: '',
         firstName: '',
-        lastName: ''
+        lastName: '',
       }
     };
   },
@@ -356,10 +371,12 @@ export default {
         return response.json();
       })
       .then(data => {
+        console.log(data)
         this.userList = data.map(main => {
         return {
           id: main[0],
           email: main[1],
+          username: main[2],
           fname: main[4],
           lname: main[5],
         };
@@ -373,9 +390,13 @@ export default {
             const date = new Date(dateString);
             return new Intl.DateTimeFormat('default', {dateStyle: 'long'}).format(date);
     },
-    openModal() {
-    console.log("work")
+    openUserModal(model) {
+      console.log(model)
       this.showModal = true;
+      this.userStatus = "Update User";
+      this.isDisabled = true;
+      this.userFormData.username = model.username;
+
     },
     closeModal() {
       this.showModal = false;
@@ -388,8 +409,11 @@ export default {
 <style scoped>
 /* Styles for the modal */
 .modal {
+  display: block;
   position: fixed; /* Stay in place */
   z-index: 10; /* Sit on top */
+  flex-direction: row;
+  flex-wrap: nowrap;
   left: 0;
   top: 0;
   width: 100%; /* Full width */
