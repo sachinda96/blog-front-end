@@ -1,17 +1,7 @@
-/**
-* Template Name: ZenBlog
-* Template URL: https://bootstrapmade.com/zenblog-bootstrap-blog-template/
-* Updated: Mar 17 2024 with Bootstrap v5.3.3
-* Author: BootstrapMade.com
-* License: https:///bootstrapmade.com/license/
-*/
-
 document.addEventListener('DOMContentLoaded', () => {
   "use strict";
 
-  /**
-   * Sticky header on scroll
-   */
+  
   const selectHeader = document.querySelector('#header');
   if (selectHeader) {
     document.addEventListener('scroll', () => {
@@ -19,9 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /**
-   * Mobile nav toggle
-   */
 
   const mobileNavToogleButton = document.querySelector('.mobile-nav-toggle');
 

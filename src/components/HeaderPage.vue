@@ -2,44 +2,27 @@
     <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
 
-      <a href="index.html" class="logo d-flex align-items-center">
+      <a href='' class="logo d-flex align-items-center">
         <h1>Blog Page</h1>
       </a>
 
       <nav id="navbar" class="navbar">
         <ul>
-          <li><RouterLink to="/blog">Blog</RouterLink></li>
           <li class="dropdown"><a ><span>Categories</span> <i class="bi bi-chevron-down dropdown-indicator"></i></a>
             <ul>
-              <li v-for="category in categories" :key="category.categoryId" ><RouterLink :to="'/blog/' + category.categoryId" >{{ category.name}}</RouterLink></li>
+              <li v-for="category in categories" :key="category.categoryId" ><RouterLink :to="'/searchresult/' + category.categoryId" >{{ category.name}}</RouterLink></li>
             </ul>
           </li>
 
-          <li><a href="about.html">About</a></li>
-           <li><RouterLink to="/dashboard">Contact</RouterLink></li>
-          <li><RouterLink to="/admin">Admin</RouterLink></li>
+          <li><a >About</a></li>
+           <li><RouterLink to="/contactpage">Contact</RouterLink></li>
+          <li><RouterLink to="/admin">Dashboard</RouterLink></li>	&nbsp;	&nbsp;
+           <li v-if="isLoggedIn" @click="logout" style="font-weight: bold;cursor: pointer;font-size: 14px;">Log Out</li>
           
         </ul>
-      </nav><!-- .navbar -->
+      </nav>
 
-      <div class="position-relative">
-        <a href="#" class="mx-2"><span class="bi-facebook"></span></a>
-        <a href="#" class="mx-2"><span class="bi-twitter"></span></a>
-        <a href="#" class="mx-2"><span class="bi-instagram"></span></a>
-
-        <a href="#" class="mx-2 js-search-open"><span class="bi-search"></span></a>
-        <i class="bi bi-list mobile-nav-toggle"></i>
-
-        <!-- ======= Search Form ======= -->
-        <div class="search-form-wrap js-search-form-wrap">
-          <form action="search-result.html" class="search-form">
-            <span class="icon bi-search"></span>
-            <input type="text" placeholder="Search" class="form-control">
-            <button class="btn js-search-close"><span class="bi-x"></span></button>
-          </form>
-        </div><!-- End Search Form -->
-
-      </div>
+      
 
     </div>
 
@@ -53,6 +36,11 @@ export default {
     return {
       categories: []
     };
+  },
+  computed: {
+    isLoggedIn() {
+      return localStorage.getItem('id') !== null;
+    }
   },
   created() {
     this.fetchCategories();
@@ -83,7 +71,12 @@ export default {
       .catch(error => {
       console.error('Error fetching categories:', error);
       });
-}
+  },
+  logout(){
+    localStorage.clear();
+    this.$router.push('/');
+     window.location.reload();
+  }
   }
 };
 </script>

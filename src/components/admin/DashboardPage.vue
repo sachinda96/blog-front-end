@@ -26,11 +26,17 @@
                   Total Blogs
                 </div>
                 <div class="h5 mb-0 font-weight-bold text-gray-800">
-                 {{blogList.length}}
+                  {{ blogList.length }}
                 </div>
               </div>
               <div class="col-auto">
-                <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                <a
+                  ><i
+                    class="bi bi-plus-circle-fill"
+                    style="color: black; font-size: 30px; text-align: right"
+                     @click="createblog"  
+                  ></i
+                ></a>
               </div>
             </div>
           </div>
@@ -47,12 +53,17 @@
                 >
                   Total Users
                 </div>
+
                 <div class="h5 mb-0 font-weight-bold text-gray-800">
-                  {{userList.length}}
+                  {{ userList.length }}
                 </div>
               </div>
               <div class="col-auto">
-                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                <i
+                  class="bi bi-plus-circle-fill"
+                  style="color: green; font-size: 30px; text-align: right"
+                  @click="addNewUserModal"
+                ></i>
               </div>
             </div>
           </div>
@@ -70,11 +81,14 @@
                   Total Category
                 </div>
                 <div class="h5 mb-0 font-weight-bold text-gray-800">
-                  {{categoryList.length}}
+                  {{ categoryList.length }}
                 </div>
               </div>
               <div class="col-auto">
-                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                <i
+                  class="bi bi-plus-circle-fill"
+                  style="color: red; font-size: 30px; text-align: right"
+                 @click="addNewCategoryModal"></i>
               </div>
             </div>
           </div>
@@ -82,7 +96,7 @@
       </div>
 
       <!-- Pending Requests Card Example -->
-      <div class="col-xl-3 col-md-6 mb-4" >
+      <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-warning shadow h-100 py-2">
           <div class="card-body">
             <div class="row no-gutters align-items-center">
@@ -94,9 +108,7 @@
                 </div>
                 <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
               </div>
-              <div class="col-auto">
-                <i class="fas fa-comments fa-2x text-gray-300"></i>
-              </div>
+             
             </div>
           </div>
         </div>
@@ -121,21 +133,21 @@
             </thead>
             <tbody>
               <tr v-for="main in blogList" :key="main.id">
-                <td >{{main.title}}</td>
-                <td>{{main.category}}</td>
-                <td>{{formatDate(main.date)}}</td>
-                <td><i class="bi bi-pencil-square" style="color:orange"></i></td>
-                <td><i class="bi bi-trash" style="color:red"></i></td>
+                <td>{{ main.title }}</td>
+                <td>{{ main.category }}</td>
+                <td>{{ formatDate(main.date) }}</td>
+                <td>
+                  <i class="bi bi-pencil-square" style="color: orange" @click="editBlog(main)"></i>
+                </td>
+                <td><i class="bi bi-trash" style="color: red"   @click="deleteBlog(main.id)"></i></td>
               </tr>
             </tbody>
           </table>
-          
         </div>
       </div>
     </div>
 
     <div class="row" v-if="showUserDiv">
-      <td><i class="bi bi-plus" style="color:green;width: 40px;font-size:20px; text-align: right: inherit;" ></i></td>
       <div class="col-xl-12 col-lg-12">
         <div class="card shadow mb-4">
           <table class="table table-striped">
@@ -149,12 +161,21 @@
               </tr>
             </thead>
             <tbody>
-              <tr  v-for="main in userList" :key="main.id">
-                <td>{{main.fname}}</td>
-                <td>{{main.lname}}</td>
-                <td>{{main.email}}</td>
-                <td><i class="bi bi-pencil-square" style="color:orange" @click="openUserModal(main)"></i></td>
-                <td><i class="bi bi-trash" style="color:red"></i></td>
+              <tr v-for="main in userList" :key="main.id">
+                <td>{{ main.firstname }}</td>
+                <td>{{ main.lastname }}</td>
+                <td>{{ main.email }}</td>
+                <td>
+                  <i
+                    class="bi bi-pencil-square"
+                    style="color: orange"
+                    :style="{ color: isAdmin ? 'orange' : 'gray', filter: isAdmin ? '' : 'blur(2px)', cursor: isAdmin ? 'pointer' : 'default' }"
+                    @click="isAdmin && openUserModal(main)"
+                  ></i>
+                </td>
+                <td><i class="bi bi-trash" style="color: red"  
+                :style="{ color: isAdmin ? 'orange' : 'gray', filter: isAdmin ? '' : 'blur(2px)', cursor: isAdmin ? 'pointer' : 'default' }"
+                @click="isAdmin && deleteUser(main.id)"></i></td>
               </tr>
             </tbody>
           </table>
@@ -172,17 +193,20 @@
         <div class="card shadow mb-4">
           <table class="table table-striped">
             <thead>
-              <tr >
+              <tr>
                 <th scope="col">Name</th>
                 <th scope="col"></th>
                 <th scope="col"></th>
               </tr>
             </thead>
             <tbody>
-              <tr  v-for="main in categoryList" :key="main.id">
-                <td>{{main.name}}</td>
-                <td><i class="bi bi-pencil-square" style="color:orange"></i></td>
-                <td><i class="bi bi-trash" style="color:red"></i></td>
+              <tr v-for="main in categoryList" :key="main.id">
+                <td>{{ main.name }}</td>
+                <td>
+                  <i class="bi bi-pencil-square" 
+                  style="color: orange" @click="showModalCategory(main)" ></i>
+                </td>
+                <td><i class="bi bi-trash" style="color: red" @click="deleteCategory(main.categoryId)"></i></td>
               </tr>
             </tbody>
           </table>
@@ -194,42 +218,97 @@
         </div>
       </div>
     </div>
-
   </div>
 
-   <div class="modal" v-if="showModal">
+  <div class="modal" v-if="showModal">
     <div class="modal-content">
       <span class="close" @click="closeModal">&times;</span>
-      <h2>{{userStatus }}</h2>
-      <form @submit.prevent="saveData">
+      <h2>{{ userStatus }}</h2>
+      <form @submit.prevent="saveUserData">
         <div class="row">
-        <label for="username">Username:</label>
-        <input type="text" id="username" v-model="userFormData.username" required>
+          <label for="username">Username:</label>
+          <input
+            type="text"
+            id="username"
+            v-model="userFormData.username"
+            :disabled="isDisabled"
+            required
+          />
         </div>
 
         <div class="row">
-        <label for="password">Password:</label>
-        <input type="password" id="password" v-model="userFormData.password" :disabled="disableFields" required>
+          <label for="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            v-model="userFormData.password"
+            :disabled="isDisabled"
+            required
+          />
         </div>
 
         <div class="row">
-        <label for="email">Email:</label>
-        <input type="email" id="email" v-model="userFormData.email" :disabled="disableFields" required>
-        </div>
-
-          <div class="row">
-        <label for="firstName">First Name:</label>
-        <input type="text" id="firstName" v-model="userFormData.firstName" required>
+          <label for="email">Email:</label>
+          <input
+            type="email"
+            id="email"
+            v-model="userFormData.email"
+            :disabled="disableFields"
+            required
+          />
         </div>
 
         <div class="row">
-        <label for="lastName">Last Name:</label>
-        <input type="text" id="lastName" v-model="userFormData.lastName" required>
+          <label for="firstName">First Name:</label>
+          <input
+            type="text"
+            id="firstName"
+            v-model="userFormData.firstname"
+            required
+          />
         </div>
-        <br>
 
         <div class="row">
-        <button style="color: white;background-color: aqua;" type="submit">Save</button>
+          <label for="lastName">Last Name:</label>
+          <input
+            type="text"
+            id="lastName"
+            v-model="userFormData.lastname"
+            required
+          />
+        </div>
+        <br />
+
+        <div class="row">
+          <button style="color: white; background-color: green" type="submit">
+            Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+   <div class="modal" v-if="showCategoryModal">
+    <div class="modal-content">
+      <span class="close" @click="closeCategoryModal">&times;</span>
+      <h2>{{ categoryStatus }}</h2>
+      <form @submit.prevent="saveCategoryData">
+        <div class="row">
+          <label for="name">Name</label>
+          <input
+            type="text"
+            id="name"
+            v-model="categoryFormData.name"
+            required
+          />
+        </div>
+        <br />
+
+        <div class="row">
+          <button style="color: white; background-color: green" type="submit">
+            Save
+          </button>
         </div>
       </form>
     </div>
@@ -245,30 +324,48 @@ export default {
       showBlogDiv: true,
       showCategoryDiv: false,
       showCommentDivL: false,
-      totalComment: 0, 
+      totalComment: 0,
       categoryList: [],
       blogList: [],
       userList: [],
       showModal: false,
-      userStatus : 'Add New User',
-      isDisabled : false,
+      userStatus: "Add New User",
+      categoryStatus: "Add New Category",
+      showCategoryModal: false,
+      isDisabled: false,
+      catid: '',
+      id:'',
+      username:'',
+      userid:'',
+      isAdmin: false,
       userFormData: {
-        username: '',
-        password: '',
-        email: '',
-        firstName: '',
-        lastName: '',
+        username: "",
+        password: "",
+        email: "",
+        firstName: "",
+        lastName: "",
+      },
+      categoryFormData: {
+        name: "",
       }
     };
   },
   created() {
+    this.userid = localStorage.getItem("id");
+    this.username = localStorage.getItem("username");
+    if(this.username == "admin"){
+      this.isAdmin = true;
+    }
+    
     this.fetchCategories();
     this.fetchBlog();
     this.fetchUsers();
+
   },
   methods: {
     createblog() {
-      this.$router.push("/manageblog");
+      const id = 0;
+      this.$router.push({ name: 'manageblog', params: { id } });
     },
     toggleUserDiv() {
       if (this.showUserDiv == false) {
@@ -302,104 +399,274 @@ export default {
         this.showCommentDiv = true;
       }
     },
-    fetchCategories(){
-        fetch('http://127.0.0.1:5000/categories', {
-        method: 'GET',
+    fetchCategories() {
+      this.categoryList = [];
+      fetch("http://127.0.0.1:5000/categories", {
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json'
-        }
+          "Content-Type": "application/json",
+        },
       })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to fetch categories');
-        }
-        return response.json();
-      })
-      .then(data => {
-        this.categoryList = data.map(category => {
-        return {
-          categoryId: category[0],
-          name: category[1]
-        };
-      });
-      })
-      .catch(error => {
-      console.error('Error fetching categories:', error);
-      }); 
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to fetch categories");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          this.categoryList = data.map((category) => {
+            return {
+              categoryId: category[0],
+              name: category[1],
+            };
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching categories:", error);
+        });
     },
-    fetchBlog(){
-        fetch('http://127.0.0.1:5000/blogs', {
-        method: 'GET',
+    fetchBlog() {
+      fetch("http://127.0.0.1:5000/blogs", {
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json'
-        }
+          "Content-Type": "application/json",
+        },
       })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to fetch blogs');
-        }
-        return response.json();
-      })
-      .then(data => {
-        this.blogList = data.map(main => {
-        return {
-          id: main[0],
-          title: main[1],
-          data:main[3],
-          date:main[4],
-          category:main[7],
-          fname:main[8],
-          lname:main[9],
-        };
-      });
-      })
-      .catch(error => {
-      console.error('Error fetching blogs:', error);
-      }); 
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to fetch blogs");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          this.blogList = data.map((main) => {
+            return {
+              id: main[0],
+              title: main[1],
+              data: main[3],
+              date: main[4],
+              category: main[7],
+              firstname: main[8],
+              lastname: main[9],
+            };
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching blogs:", error);
+        });
     },
-    fetchUsers(){
-        fetch('http://127.0.0.1:5000/users', {
-        method: 'GET',
+    fetchUsers() {
+      this.userList = [];
+      fetch("http://127.0.0.1:5000/users", {
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json'
-        }
+          "Content-Type": "application/json",
+        },
       })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to fetch users');
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log(data)
-        this.userList = data.map(main => {
-        return {
-          id: main[0],
-          email: main[1],
-          username: main[2],
-          fname: main[4],
-          lname: main[5],
-        };
-      });
-      })
-      .catch(error => {
-      console.error('Error fetching users:', error);
-      }); 
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to fetch users");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data);
+          this.userList = data.map((main) => {
+            return {
+              id: main[0],
+              email: main[1],
+              username: main[2],
+              password:main[3],
+              firstname: main[4],
+              lastname: main[5],
+            };
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching users:", error);
+        });
     },
     formatDate(dateString) {
-            const date = new Date(dateString);
-            return new Intl.DateTimeFormat('default', {dateStyle: 'long'}).format(date);
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat("default", { dateStyle: "long" }).format(
+        date
+      );
     },
     openUserModal(model) {
-      console.log(model)
       this.showModal = true;
       this.userStatus = "Update User";
       this.isDisabled = true;
       this.userFormData.username = model.username;
-
+      this.userFormData.password = model.password;
+      this.userFormData.email = model.email;
+      this.userFormData.firstname = model.firstname;
+      this.userFormData.lastname = model.lastname;
+      this.id = model.id;
+    },
+    addNewUserModal() {
+      console.log("work");
+      this.showModal = true;
+      this.userStatus = "Add New User";
+      this.isDisabled = false;
     },
     closeModal() {
       this.showModal = false;
+      this.userFormData.username = "";
+      this.userFormData.password = "";
+      this.userFormData.email = "";
+      this.userFormData.firstname = "";
+      this.userFormData.lastname = "";
+    },
+
+    showModalCategory(model) {
+      this.showCategoryModal = true;
+      this.userStatus = "Update Category";
+      this.categoryFormData.name = model.name;
+      this.catid = model.categoryId;
+    },
+    addNewCategoryModal() {
+      this.showCategoryModal = true;
+      this.userStatus = "Add New Category";
+    },
+    closeCategoryModal() {
+      this.showCategoryModal = false;
+      this.categoryFormData.name = "";
+    },
+    saveUserData() {
+
+      let method = 'PUT';
+      
+      if(this.userStatus == "Add New User"){
+          method = 'POST';
+      }
+      fetch("http://127.0.0.1:5000/users", {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: this.id,
+          username:this.userFormData.username,
+          password:this.userFormData.password,
+          email:this.userFormData.email, 
+          firstname:this.userFormData.firstname, 
+          lastname:this.userFormData.lastname,
+          isActive: 1 
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          
+          alert("Successfully Saved!");
+          this.closeModal();
+          this.fetchUsers();
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("Failed to make request. Please try again.");
+        });
+    },
+    deleteUser(id){
+      const isConfirmed = window.confirm("Are you sure you want to delete this user?");
+      if (isConfirmed) {
+       fetch("http://127.0.0.1:5000/users/"+id, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to delete users");
+          }
+           alert("Successfully Deleted!");
+           this.fetchUsers();
+        })
+        .catch((error) => {
+          console.error("Error deleting users:", error);
+        });
+      }
+    },
+    saveCategoryData(){
+
+    let method = 'PUT';
+      
+      if(this.userStatus == "Add New Category"){
+          method = 'POST';
+      }
+      fetch("http://127.0.0.1:5000/categories", {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: this.catid,
+          name:this.categoryFormData.name
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          
+          alert("Successfully Saved!");
+          this.closeCategoryModal();
+          this.fetchCategories();
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("Failed to make request. Please try again.");
+        });
+
+
+    },
+     deleteCategory(id){
+      const isConfirmed = window.confirm("Are you sure you want to delete this category?");
+      if (isConfirmed) {
+       fetch("http://127.0.0.1:5000/categories/"+id, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to delete category");
+          }
+           alert("Successfully Deleted!");
+           this.fetchCategories();
+        })
+        .catch((error) => {
+          console.error("Error deleting category:", error);
+        });
+      }
+    },
+    deleteBlog(id){
+      const isConfirmed = window.confirm("Are you sure you want to delete this Blog?");
+      if (isConfirmed) {
+       fetch("http://127.0.0.1:5000/blogs/"+id, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to delete blog");
+          }
+           alert("Successfully Deleted!");
+           this.fetchBlog();
+        })
+        .catch((error) => {
+          console.error("Error deleting blog:", error);
+        });
+      }
+    },
+    editBlog(main){
+      const id = main.id;
+      this.$router.push({ name: 'manageblog', params: { id } });
     }
   },
 };
@@ -419,8 +686,8 @@ export default {
   width: 100%; /* Full width */
   height: 100%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 }
 
 /* Modal content */
